@@ -125,6 +125,29 @@ print(weight) # should be around 0.00683644777551 rounding to 6.84E-3
 
 After I updated the weights for each particle, I had to resample the particles with probability proportional to these weights.
 
+**Resampline Wheel**
+
+```
+while w[index] < beta:
+    beta = beta - w[index]
+    index = index + 1
+
+select p[index]
+```
+code example written in python
+```
+p3 = []
+index = int(random.random() * N)
+beta = 0.
+mw = max(w)
+for i in range(N):
+    beta += random.random() * 2.0 * mw
+    while beta > w[index]:
+        beta -= w[index]
+        index = (index + 1) % N
+    p3.append(p[index])
+```    
+
 Project Code
 
 - `main.cpp` runs particle filter as well as measures its runtime and calculate the weighted error at each time step.
