@@ -45,7 +45,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
     // generate particles with normal distribution with mean on GPS values
     for(int i=0; i<num_particles; ++i) {
-        
+
         Particle particle_i;
 
         particle_i.x = dist_x(gen);
@@ -170,10 +170,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         for (int n=0; n<observations.size(); ++n) {
 
             // transformed predicted particels[i] in map as pred_m[i]
-            double trans_x = particles[i].x + (cos(particles[i].theta) * observations[n].x) - (sin(particles[i].theta) * observations[n].y);
-            double trans_y = particles[i].y + (sin(particles[i].theta) * observations[n].x) + (cos(particles[i].theta) * observations[n].y);
-            observations[n].x = trans_x;
-            observations[n].y = trans_y;
+            double x_map = particles[i].x + (cos(particles[i].theta) * observations[n].x) - (sin(particles[i].theta) * observations[n].y);
+            double y_map = particles[i].y + (sin(particles[i].theta) * observations[n].x) + (cos(particles[i].theta) * observations[n].y);
+            observations[n].x = x_map;
+            observations[n].y = y_map;
             //cout << "x = " << particles[i].x << " --> x_m = " << pred_m[i] << endl;
             //cout << "y = " << particles[i].y << " --> y_m = " << pred_m[i] << endl;
         }

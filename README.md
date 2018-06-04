@@ -56,24 +56,12 @@ For a single particle:
 
 Observations in the car coordinate system can be transformed into map coordinates (x_m,y_m) by passing car observation coordinates (x_c,y_c), map particle coordinates (x_p,y_p), and our rotation angle (-90 degrees) through a homogenous transformation matrix, which performs rotation and translation.
 
-![alt text][image2]
-
-
-Transform observations to map coordinate
-function `homogeneous transformation` is composed of a rotation in a translation
-Essentiallly, 
-
 - ORIENTATION: rotate the maps frame to match the particles point of view.
 - ORIGIN: move the origin of the f
 rame to the location of the particle
 
-### Association
-Data association is matching landmark measurements(observations) to objects in the real world(map landmarks). 
+![alt text][image2]
 
-To pick the right measurement(observation) use the Nearest Neighor. Often times, you have some map landmarks that have multiple lidar measurements that could correspond to it. 
-
-
-**Landmarks**
 
 ```
 import numpy as np
@@ -94,15 +82,17 @@ y_map= y_part + (np.sin(theta) * x_obs) + (np.cos(theta) * y_obs)
 print(int(x_map), int(y_map)) # (0,5)
 ```
 
-**Association**
+### Association
+Data association is matching landmark measurements(observations) to objects in the real world(map landmarks). 
 
-associate each transformed observation with a land mark identifier.
+To pick the right measurement(observation) use the Nearest Neighor. Often times, you have some map landmarks that have multiple lidar measurements that could correspond to it. 
 
-**Particle Weights**
+
+### Update Weights**
 
 We can calculate particle weights using the following equation:
 
-![alt text][image2]
+![alt text][image3]
 
 Multivariate-Gaussian Probability
 
