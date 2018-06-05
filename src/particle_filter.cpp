@@ -10,13 +10,10 @@
 #include <iostream>
 #include <numeric>
 #include <math.h>
-#include <cmath> //
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <iterator>
-
-#include <random>
 
 #include "particle_filter.h"
 
@@ -64,7 +61,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	//  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
 	//  http://www.cplusplus.com/reference/random/default_random_engine/
 
-    cout << "Prediction ..." << endl;
     // initialize a random engine
     default_random_engine gen;
 
@@ -85,7 +81,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
             y_p = p->y + velocity * delta_t * sin(p->theta);
             theta_p = p->theta + (yaw_rate * delta_t);
         }
-        //cout << "Dx = " << (particles[i].x - px_p) << ", Dy = " << (particles[i].y - py_p) << endl;
 
         // create Gaussian normal distributions for px_p, py_p and yaw_p
         normal_distribution<double> dist_x_p(x_p, std_pos[0]);
@@ -96,10 +91,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
         p->x = dist_x_p(gen);
         p->y = dist_y_p(gen);
         p->theta = dist_theta_p(gen);
-
-        //cout << "particles[i](x, y, theta) = " << particles[i].x << "\t" << particles[i].y << "\t" << particles[i].theta <<endl;
     }
-    cout << "Prediction done" << endl;
 }
 
 void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations) {
@@ -124,9 +116,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
 
-    cout << "Update Weights ..." << endl;
-    //cout << "observations size = " << observations.size() << endl;
-
     double sum_w_update = 0.0;  // sum of weights to normalize each weight
     for (int i=0; i<num_particles; ++i) {
         Particle *p = &particles[i];  // get the i-th particle address to update
@@ -143,7 +132,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
             LandmarkObs ob_map;  // observations transformed form car's into map's coordinate
             ob_map.x = p->x + (cos(p->theta) * ob_car->x) - (sin(p->theta) * ob_car->y);
             ob_map.y = p->y + (sin(p->theta) * ob_car->x) + (cos(p->theta) * ob_car->y);
-            //ob_map.id = ob_car->id;
 
             /* ASSOCIATION
              * associating the transformed observations(in MAP'S coordinate system)
@@ -176,14 +164,11 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         }
         p->weight = w_update;
         sum_w_update += w_update;  // add updated weights for each circle
-        //cout << "update all weight = P(particle|observation)" << endl;
     }
-    cout << "sum_w_update = " << sum_w_update << endl;
     // normalize all weights
     for(int i=0; i<num_particles; ++i) {
         particles[i].weight /= sum_w_update;
     }
-    //cout << "update weights for all particles" << endl;
 }
 
 void ParticleFilter::resample() {
@@ -191,6 +176,26 @@ void ParticleFilter::resample() {
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
 
+    // creates weights vector list
+    vector<double> weights;
+    for (int i=0; i<num_particles; i++) {  // For each particle
+
+        //cout << particles[i].weight << endl;
+        weights.push_back(particles[i].weight);
+    }
+
+    // initialize a random engine
+    default_random_engine gen;
+    // create distribution
+    discrete_distribution<double> dist(weights.begin(), weights.end());
+
+    //
+    vector<Particle> resample_particles;
+    for (int i=0; i<num_particles; ++i) {
+        int index = dist(gen);
+        resample_particles.push_back(particles[index]);
+    }
+    particles = resample_particles;
 }
 
 Particle ParticleFilter::SetAssociations(Particle& particle, const std::vector<int>& associations, 
