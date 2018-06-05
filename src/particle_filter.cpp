@@ -100,6 +100,23 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to 
 	//   implement this method and use it as a helper during the updateWeights phase.
 
+    for (int n=0; n<observations.size(); ++n) {
+        LandmarkObs *ob = &observations[n];
+        // initialize the closest index and distance
+        int index_min;
+        double dist_min = numeric_limits<double>::max();
+
+        // find the closest predicted measurement for the n-th observation
+        for (int i=0; i<predicted.size(); ++n){
+            double distance = dist(predicted[i].x, predicted[i].y, ob->x, ob->y);
+            if (distance < dist_min){
+                dist_min = distance;
+                index_min = i;
+            }
+        }
+        // assign the observation measurement to the i_min-th predicted measurement
+        predicted[index_min] = observations[n];
+    }
 
 }
 
@@ -189,7 +206,7 @@ void ParticleFilter::resample() {
     // create distribution
     discrete_distribution<double> dist(weights.begin(), weights.end());
 
-    //
+    // run resampling wheel
     vector<Particle> resample_particles;
     for (int i=0; i<num_particles; ++i) {
         int index = dist(gen);
